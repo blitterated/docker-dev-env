@@ -1,6 +1,6 @@
 # Docker Dev Environment
 
-A curated history of work
+I'm not so worried about a single process running isolated in Docker as I am having an isolated filesystem that is unpolluted with dependencies and runtimes from other projects. In return, neither can this isolated filesystem pollute the host OS'.
 
 ## Setup the repo
 
@@ -23,6 +23,90 @@ git config --local -l
 git config user.name
 git config user.email
 ```
+
+## Play around with default images for different distros
+
+- Arch
+
+  ```sh
+  docker run -it --rm --init archlinux bash
+  ```
+  ```sh
+  # update packages
+  pacman -Syy
+
+  # see if Vim is already installed
+  pacman -Qi vim
+
+  # search for the Vim package
+  apt-cache search vim
+
+  # install Vim
+  pacman -S vim
+  ```
+
+- Alpine
+
+  ```sh
+  docker run -it --rm --init alpine /bin/ash
+  ```
+  ```sh
+  # update packages
+  apk update
+
+  # see if Vim is already installed
+  apk -e info vim
+
+  # search for the Vim package
+  apk search vim
+
+  # install Vim
+  apk add vim
+  ```
+
+- Ubuntu (Minimal)
+
+  ```sh
+  docker run -it --rm --init ubuntu bash
+  ```
+  ```sh
+  # update packages
+  apt update
+
+  # see if Vim is already installed
+  dpkg -S toto
+  dpkg -l toto
+
+  # search for the Vim package
+  apt-cache search vim
+
+  # install Vim
+  apt install vim
+  ```
+
+
+- Minimal Debian, by Bitnami
+
+  ```sh
+  docker run -it --rm --init bitnami/minideb:latest bash
+  ```
+  ```sh
+  # update packages
+  apt update
+
+  # see if Vim is already installed
+  dpkg -S toto
+  dpkg -l toto
+
+  # search for the Vim package
+  apt-cache search vim
+
+  # install Vim
+  apt install vim
+  ```
+
+
+## Create an Alpine Docker image
 
 ### Create a bash_profile for Docker image
 
@@ -55,7 +139,7 @@ COPY bash_profile /root/.bash_profile
 COPY bashrc /root/.bashrc
 
 RUN apk --update add \
-        man man-pages mdocml-apropos \
+        mandoc man-pages mandoc-apropos \
         less less-doc \
         bash bash-doc bash-completion \
         curl curl-doc \
@@ -151,6 +235,8 @@ docker run -it --rm --privileged --pid=host justincormack/nsenter1
 # Issues
 
 ## Error while using `apk search` with Alpine. 
+
+This was before switching to Arch
 
 ```
 bash-5.1# apk search ag
@@ -264,4 +350,13 @@ RUN apk --update add \
 * Linux Kit
   * [GH linuxkit](https://github.com/linuxkit/linuxkit)
   * [Announcing LinuxKit](https://www.docker.com/blog/introducing-linuxkit-container-os-toolkit/)
-  * [busybox on DockerHub](https://hub.docker.com/_/busybox)                                                                                              
+  * [busybox on DockerHub](https://hub.docker.com/_/busybox)
+* `docker run` with `--init`
+  * [Docker docs: Specify an init process](https://docs.docker.com/engine/reference/run/#specify-an-init-process)
+  * [SO How to use --init parameter in docker run](https://stackoverflow.com/questions/43122080/how-to-use-init-parameter-in-docker-run)
+  * [baseimage-docker (A good explanation of why you'd want to)](https://phusion.github.io/baseimage-docker/)
+  * [tini](https://github.com/krallin/tini)
+  * [Choosing an init process for multi-process containers](https://ahmet.im/blog/minimal-init-process-for-containers/)
+  * [s6](https://skarnet.org/software/s6/index.html)
+  * [s6-overlay](https://github.com/just-containers/s6-overlay)
+  * 
