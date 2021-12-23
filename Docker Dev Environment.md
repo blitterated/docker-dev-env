@@ -1,6 +1,6 @@
 # Docker Dev Environment
 
-I'm not so worried about a single process running isolated in Docker as I am having an isolated filesystem that is unpolluted with dependencies and runtimes from other projects. In return, neither can this isolated filesystem pollute the host OS'.
+I'm not so worried about a single process running isolated in Docker as I am having an isolated filesystem that is unpolluted with dependencies and runtimes from other projects. In return, neither can this isolated filesystem pollute the filesystem of the host OS.
 
 ## Intent
 * This concept is not for creating containers ready for production deployment. Instead the intent is to code without polluting the developers' machines, and to deploy the project to a production runtime that is not container based. It's simply another way to achieve a deeper kind of segregation along the lines of virtualenv or asdf.
@@ -13,17 +13,19 @@ I'm not so worried about a single process running isolated in Docker as I am hav
 
 ### Questions
 * If nothing needs to be running in the container, then what's going to be running when the container is started?
+    * There is a simple zombie eating process you get when you start Docker with `--init`
+    * There are other init processes available like s6, tini, runit, supervisord, monit, and others
 * Do we need a container if just a union mount filesystem will do?
     * Yes you need a container. The filesystems are unioned in the kernel.
 
-### Strectch Goals
+### Stretch Goals
 * Have an init process running
    * spin up services that may be needed such as ssh and syslog
    * catch zombie processes
 * ssh key forwarding from host with ssh-agent
    * Is this needed? The main usecase is git cloning, but if the files are stored on the host's filesystem then we don't need git or ssh access in the container.
 * logging issues with syslog
-   * Is this needed? The only usecase is if the code in question will be run in the container for testing. More than likely, this will be true. We will run the code in the container. The runtime *is* one of the dependencies.
+   * Is this needed? The only usecase is if the code in question will be run in the container for testing. More than likely, this will be true. We will run the code in the container. The language runtime (`ruby`, `python`, et. al.) *is* one of the dependencies.
 
 
 
@@ -202,13 +204,13 @@ Always update the package list first. Otherwise you man not be able to find any 
 apt update
 ```
 
-man-db needs something for displaying pages. Dialog is preferred, but it will fall back to Readline during installation.
+`man-db` needs something for displaying pages. Dialog is preferred, but it will fall back to Readline during installation.
 
 ```sh
 apt install dialog
 ```
 
-Next install man-db.
+Next, install man-db.
 
 ```sh
 apt install man-db
@@ -226,7 +228,7 @@ To restore this content, including manpages, you can run the 'unminimize'
 command. You will still need to ensure the 'man-db' package is installed.
 ```
 
-So the `man` executable has not been replaced. Initially I thought it was because there was _already_ and executable in place. I tried deleting it first before installing on a new container:
+So the `man` executable has not been replaced. Initially, I thought it was because there was _already_ an executable in place. I tried deleting it first before installing on a new container:
 
 ```sh
 apt update
@@ -235,7 +237,7 @@ apt install dialog
 apt install man-db
 ```
 
-But now installation of man-db was failing because it couldn't find the `man` executable. Why would `apt` need the `man` executable to already be in place when installing `man`? I decided to take a look at the `unminimize` script itself and found this code near the end:
+But now installation of man-db was failing because it couldn't find the `man` executable. Why would `apt` need the `man` executable to be in place already when installing `man`? I decided to take a look at the `unminimize` script itself and found this code near the end:
 
 ```sh
 if  [ "$(dpkg-divert --truename /usr/bin/man)" = "/usr/bin/man.REAL" ]; then
@@ -295,7 +297,9 @@ man man
 No manual entry for man
 ```
 
-Success! All that's left now is to install some manpages. Ultimately, I still don't know why `apt` install fails when deleting a file (in this case `/usr/bin/man`) that's been diverted. I think that's a deeper exploration that necessary right now. I understand enough to cleanly unwind what's been minimized, and I'm happy to have man pages again.
+Success! All that's left now is to install some manpages.
+
+Ultimately, I still don't know why `apt` install fails when deleting a file that's been diverted, in this case `/usr/bin/man`. I think that's a deeper exploration than necessary right now. I understand enough to cleanly unwind what's been minimized, and I'm happy to have man pages again.
 
 ## Connect to Docker's secret Linux VM
 
@@ -327,7 +331,7 @@ kermit -l ~/Library/Containers/com.docker.docker/Data/vms/0/tty -b 38400
 
 ## Create a Docker volume
 
-Or, why using Docker volumes is a bad idea for development. The volumes are stored inside the Linux kernel instance that is the  host for all the guest docker kernels, and not via a bound volume to the root OS' filesystem. Of course if your root OS is Linux, then you're fine`
+Or, why using Docker volumes is a bad idea for development. The volumes are stored inside the Linux kernel instance that is the  host for all the guest docker kernels, and not via a bound volume to the root OS' filesystem. Of course if your root OS is Linux, then you're fine
 
 
 ### Create a new volume
