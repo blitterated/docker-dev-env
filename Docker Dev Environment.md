@@ -297,7 +297,554 @@ man man
 No manual entry for man
 ```
 
-Success! All that's left now is to install some manpages.
+Success! All that's left now is to install some manpages. Let's try again in a new container.
+
+### more confusing issues ensued
+
+```sh
+apt update
+apt install dialog manpages manpages-dev manpages-posix manpages-posix-dev man-db
+rm -f /usr/bin/man
+dpkg-divert --quiet --remove --rename /usr/bin/man
+rm -f /usr/share/man/man1/sh.1.gz
+dpkg-divert --quiet --remove --rename /usr/share/man/man1/sh.1.gz
+```
+
+```sh
+man man
+```
+
+```
+No manual entry for man
+```
+
+Uhh... what? Maybe try indexing the manpages.
+
+```sh
+mandb
+```
+
+```
+...
+0 man subdirectories contained newer manual pages.
+0 manual pages were added.
+0 stray cats were added.
+0 old database entries were purged.
+```
+
+Are manpages installed?
+
+```sh
+dpkg -l manpages
+```
+
+```
+Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
+|/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+||/ Name           Version      Architecture Description
++++-==============-============-============-===========================================
+ii  manpages       5.05-1       all          Manual pages about using a GNU/Linux system
+```
+
+`ii ` in the first column means manpages are installed. Where are those files in the package supposed to land?
+
+```sh
+dpkg -L manpages
+```
+
+```
+/.
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/manpages
+/usr/share/doc/manpages/Changes.old.gz
+/usr/share/doc/manpages/POSIX-MANPAGES
+/usr/share/doc/manpages/README.Debian
+/usr/share/doc/manpages/TODO.Debian
+/usr/share/doc/manpages/changelog.Debian.gz
+/usr/share/doc/manpages/copyright
+/usr/share/doc/manpages/man-addons.el
+/usr/share/doc/manpages/man-pages-5.05.Announce
+/usr/share/lintian
+/usr/share/lintian/overrides
+/usr/share/lintian/overrides/manpages
+/usr/share/man
+/usr/share/man/man1
+/usr/share/man/man1/getent.1.gz
+/usr/share/man/man1/iconv.1.gz
+/usr/share/man/man1/intro.1.gz
+/usr/share/man/man1/ldd.1.gz
+/usr/share/man/man1/locale.1.gz
+/usr/share/man/man1/localedef.1.gz
+/usr/share/man/man1/memusage.1.gz
+/usr/share/man/man1/memusagestat.1.gz
+/usr/share/man/man1/mtrace.1.gz
+/usr/share/man/man1/pldd.1.gz
+/usr/share/man/man1/sprof.1.gz
+/usr/share/man/man2
+/usr/share/man/man2/intro.2.gz
+/usr/share/man/man3
+/usr/share/man/man3/intro.3.gz
+/usr/share/man/man4
+/usr/share/man/man4/cciss.4.gz
+/usr/share/man/man4/console_codes.4.gz
+/usr/share/man/man4/cpuid.4.gz
+/usr/share/man/man4/dsp56k.4.gz
+/usr/share/man/man4/full.4.gz
+/usr/share/man/man4/fuse.4.gz
+/usr/share/man/man4/hd.4.gz
+/usr/share/man/man4/hpsa.4.gz
+/usr/share/man/man4/initrd.4.gz
+/usr/share/man/man4/intro.4.gz
+/usr/share/man/man4/lirc.4.gz
+/usr/share/man/man4/loop.4.gz
+/usr/share/man/man4/lp.4.gz
+/usr/share/man/man4/mem.4.gz
+/usr/share/man/man4/mouse.4.gz
+/usr/share/man/man4/msr.4.gz
+/usr/share/man/man4/null.4.gz
+/usr/share/man/man4/pts.4.gz
+/usr/share/man/man4/ram.4.gz
+/usr/share/man/man4/random.4.gz
+/usr/share/man/man4/rtc.4.gz
+/usr/share/man/man4/sd.4.gz
+/usr/share/man/man4/smartpqi.4.gz
+/usr/share/man/man4/st.4.gz
+/usr/share/man/man4/tty.4.gz
+/usr/share/man/man4/ttyS.4.gz
+/usr/share/man/man4/vcs.4.gz
+/usr/share/man/man4/veth.4.gz
+/usr/share/man/man4/wavelan.4.gz
+/usr/share/man/man5
+/usr/share/man/man5/acct.5.gz
+/usr/share/man/man5/charmap.5.gz
+/usr/share/man/man5/core.5.gz
+/usr/share/man/man5/dir_colors.5.gz
+/usr/share/man/man5/elf.5.gz
+/usr/share/man/man5/filesystems.5.gz
+/usr/share/man/man5/gai.conf.5.gz
+/usr/share/man/man5/group.5.gz
+/usr/share/man/man5/host.conf.5.gz
+/usr/share/man/man5/hosts.5.gz
+/usr/share/man/man5/hosts.equiv.5.gz
+/usr/share/man/man5/intro.5.gz
+/usr/share/man/man5/issue.5.gz
+/usr/share/man/man5/locale.5.gz
+/usr/share/man/man5/motd.5.gz
+/usr/share/man/man5/networks.5.gz
+/usr/share/man/man5/nologin.5.gz
+/usr/share/man/man5/nss.5.gz
+/usr/share/man/man5/nsswitch.conf.5.gz
+/usr/share/man/man5/proc.5.gz
+/usr/share/man/man5/protocols.5.gz
+/usr/share/man/man5/repertoiremap.5.gz
+/usr/share/man/man5/resolv.conf.5.gz
+/usr/share/man/man5/rpc.5.gz
+/usr/share/man/man5/securetty.5.gz
+/usr/share/man/man5/services.5.gz
+/usr/share/man/man5/shells.5.gz
+/usr/share/man/man5/slabinfo.5.gz
+/usr/share/man/man5/sysfs.5.gz
+/usr/share/man/man5/termcap.5.gz
+/usr/share/man/man5/ttytype.5.gz
+/usr/share/man/man5/tzfile.5.gz
+/usr/share/man/man5/utmp.5.gz
+/usr/share/man/man6
+/usr/share/man/man6/intro.6.gz
+/usr/share/man/man7
+/usr/share/man/man7/address_families.7.gz
+/usr/share/man/man7/aio.7.gz
+/usr/share/man/man7/armscii-8.7.gz
+/usr/share/man/man7/arp.7.gz
+/usr/share/man/man7/ascii.7.gz
+/usr/share/man/man7/attributes.7.gz
+/usr/share/man/man7/boot.7.gz
+/usr/share/man/man7/bootparam.7.gz
+/usr/share/man/man7/bpf-helpers.7.gz
+/usr/share/man/man7/capabilities.7.gz
+/usr/share/man/man7/cgroup_namespaces.7.gz
+/usr/share/man/man7/cgroups.7.gz
+/usr/share/man/man7/charsets.7.gz
+/usr/share/man/man7/complex.7.gz
+/usr/share/man/man7/cp1251.7.gz
+/usr/share/man/man7/cp1252.7.gz
+/usr/share/man/man7/cpuset.7.gz
+/usr/share/man/man7/credentials.7.gz
+/usr/share/man/man7/ddp.7.gz
+/usr/share/man/man7/environ.7.gz
+/usr/share/man/man7/epoll.7.gz
+/usr/share/man/man7/fanotify.7.gz
+/usr/share/man/man7/feature_test_macros.7.gz
+/usr/share/man/man7/fifo.7.gz
+/usr/share/man/man7/futex.7.gz
+/usr/share/man/man7/glob.7.gz
+/usr/share/man/man7/hier.7.gz
+/usr/share/man/man7/hostname.7.gz
+/usr/share/man/man7/icmp.7.gz
+/usr/share/man/man7/inode.7.gz
+/usr/share/man/man7/inotify.7.gz
+/usr/share/man/man7/intro.7.gz
+/usr/share/man/man7/ip.7.gz
+/usr/share/man/man7/ipc_namespaces.7.gz
+/usr/share/man/man7/ipv6.7.gz
+/usr/share/man/man7/iso_8859-1.7.gz
+/usr/share/man/man7/iso_8859-10.7.gz
+/usr/share/man/man7/iso_8859-11.7.gz
+/usr/share/man/man7/iso_8859-13.7.gz
+/usr/share/man/man7/iso_8859-14.7.gz
+/usr/share/man/man7/iso_8859-15.7.gz
+/usr/share/man/man7/iso_8859-16.7.gz
+/usr/share/man/man7/iso_8859-2.7.gz
+/usr/share/man/man7/iso_8859-3.7.gz
+/usr/share/man/man7/iso_8859-4.7.gz
+/usr/share/man/man7/iso_8859-5.7.gz
+/usr/share/man/man7/iso_8859-6.7.gz
+/usr/share/man/man7/iso_8859-7.7.gz
+/usr/share/man/man7/iso_8859-8.7.gz
+/usr/share/man/man7/iso_8859-9.7.gz
+/usr/share/man/man7/keyrings.7.gz
+/usr/share/man/man7/koi8-r.7.gz
+/usr/share/man/man7/koi8-u.7.gz
+/usr/share/man/man7/libc.7.gz
+/usr/share/man/man7/locale.7.gz
+/usr/share/man/man7/mailaddr.7.gz
+/usr/share/man/man7/man-pages.7.gz
+/usr/share/man/man7/man.7.gz
+/usr/share/man/man7/math_error.7.gz
+/usr/share/man/man7/mount_namespaces.7.gz
+/usr/share/man/man7/mq_overview.7.gz
+/usr/share/man/man7/namespaces.7.gz
+/usr/share/man/man7/netdevice.7.gz
+/usr/share/man/man7/netlink.7.gz
+/usr/share/man/man7/network_namespaces.7.gz
+/usr/share/man/man7/nptl.7.gz
+/usr/share/man/man7/numa.7.gz
+/usr/share/man/man7/operator.7.gz
+/usr/share/man/man7/packet.7.gz
+/usr/share/man/man7/path_resolution.7.gz
+/usr/share/man/man7/persistent-keyring.7.gz
+/usr/share/man/man7/pid_namespaces.7.gz
+/usr/share/man/man7/pipe.7.gz
+/usr/share/man/man7/pkeys.7.gz
+/usr/share/man/man7/posixoptions.7.gz
+/usr/share/man/man7/process-keyring.7.gz
+/usr/share/man/man7/pthreads.7.gz
+/usr/share/man/man7/pty.7.gz
+/usr/share/man/man7/random.7.gz
+/usr/share/man/man7/raw.7.gz
+/usr/share/man/man7/regex.7.gz
+/usr/share/man/man7/rtld-audit.7.gz
+/usr/share/man/man7/rtnetlink.7.gz
+/usr/share/man/man7/sched.7.gz
+/usr/share/man/man7/sem_overview.7.gz
+/usr/share/man/man7/session-keyring.7.gz
+/usr/share/man/man7/shm_overview.7.gz
+/usr/share/man/man7/sigevent.7.gz
+/usr/share/man/man7/signal-safety.7.gz
+/usr/share/man/man7/signal.7.gz
+/usr/share/man/man7/sock_diag.7.gz
+/usr/share/man/man7/socket.7.gz
+/usr/share/man/man7/spufs.7.gz
+/usr/share/man/man7/standards.7.gz
+/usr/share/man/man7/suffixes.7.gz
+/usr/share/man/man7/symlink.7.gz
+/usr/share/man/man7/sysvipc.7.gz
+/usr/share/man/man7/tcp.7.gz
+/usr/share/man/man7/termio.7.gz
+/usr/share/man/man7/thread-keyring.7.gz
+/usr/share/man/man7/time.7.gz
+/usr/share/man/man7/udp.7.gz
+/usr/share/man/man7/udplite.7.gz
+/usr/share/man/man7/unicode.7.gz
+/usr/share/man/man7/units.7.gz
+/usr/share/man/man7/unix.7.gz
+/usr/share/man/man7/uri.7.gz
+/usr/share/man/man7/user-keyring.7.gz
+/usr/share/man/man7/user-session-keyring.7.gz
+/usr/share/man/man7/user_namespaces.7.gz
+/usr/share/man/man7/utf-8.7.gz
+/usr/share/man/man7/uts_namespaces.7.gz
+/usr/share/man/man7/vdso.7.gz
+/usr/share/man/man7/vsock.7.gz
+/usr/share/man/man7/x25.7.gz
+/usr/share/man/man7/xattr.7.gz
+/usr/share/man/man8
+/usr/share/man/man8/iconvconfig.8.gz
+/usr/share/man/man8/intro.8.gz
+/usr/share/man/man8/ld.so.8.gz
+/usr/share/man/man8/ldconfig.8.gz
+/usr/share/man/man8/sln.8.gz
+/usr/share/man/man8/tzselect.8.gz
+/usr/share/man/man8/zdump.8.gz
+/usr/share/man/man8/zic.8.gz
+/usr/share/man/man4/kmem.4.gz
+/usr/share/man/man4/loop-control.4.gz
+/usr/share/man/man4/port.4.gz
+/usr/share/man/man4/ptmx.4.gz
+/usr/share/man/man4/urandom.4.gz
+/usr/share/man/man4/vcsa.4.gz
+/usr/share/man/man4/zero.4.gz
+/usr/share/man/man5/attr.5.gz
+/usr/share/man/man5/fs.5.gz
+/usr/share/man/man5/numa_maps.5.gz
+/usr/share/man/man5/procfs.5.gz
+/usr/share/man/man5/resolver.5.gz
+/usr/share/man/man5/utmpx.5.gz
+/usr/share/man/man5/wtmp.5.gz
+/usr/share/man/man7/ftm.7.gz
+/usr/share/man/man7/glibc.7.gz
+/usr/share/man/man7/iso-8859-1.7.gz
+/usr/share/man/man7/iso-8859-10.7.gz
+/usr/share/man/man7/iso-8859-11.7.gz
+/usr/share/man/man7/iso-8859-13.7.gz
+/usr/share/man/man7/iso-8859-14.7.gz
+/usr/share/man/man7/iso-8859-15.7.gz
+/usr/share/man/man7/iso-8859-16.7.gz
+/usr/share/man/man7/iso-8859-2.7.gz
+/usr/share/man/man7/iso-8859-3.7.gz
+/usr/share/man/man7/iso-8859-4.7.gz
+/usr/share/man/man7/iso-8859-5.7.gz
+/usr/share/man/man7/iso-8859-6.7.gz
+/usr/share/man/man7/iso-8859-7.7.gz
+/usr/share/man/man7/iso-8859-8.7.gz
+/usr/share/man/man7/iso-8859-9.7.gz
+/usr/share/man/man7/iso_8859_1.7.gz
+/usr/share/man/man7/iso_8859_10.7.gz
+/usr/share/man/man7/iso_8859_11.7.gz
+/usr/share/man/man7/iso_8859_13.7.gz
+/usr/share/man/man7/iso_8859_14.7.gz
+/usr/share/man/man7/iso_8859_15.7.gz
+/usr/share/man/man7/iso_8859_16.7.gz
+/usr/share/man/man7/iso_8859_2.7.gz
+/usr/share/man/man7/iso_8859_3.7.gz
+/usr/share/man/man7/iso_8859_4.7.gz
+/usr/share/man/man7/iso_8859_5.7.gz
+/usr/share/man/man7/iso_8859_6.7.gz
+/usr/share/man/man7/iso_8859_7.7.gz
+/usr/share/man/man7/iso_8859_8.7.gz
+/usr/share/man/man7/iso_8859_9.7.gz
+/usr/share/man/man7/latin1.7.gz
+/usr/share/man/man7/latin10.7.gz
+/usr/share/man/man7/latin2.7.gz
+/usr/share/man/man7/latin3.7.gz
+/usr/share/man/man7/latin4.7.gz
+/usr/share/man/man7/latin5.7.gz
+/usr/share/man/man7/latin6.7.gz
+/usr/share/man/man7/latin7.7.gz
+/usr/share/man/man7/latin8.7.gz
+/usr/share/man/man7/latin9.7.gz
+/usr/share/man/man7/precedence.7.gz
+/usr/share/man/man7/re_format.7.gz
+/usr/share/man/man7/svipc.7.gz
+/usr/share/man/man7/tis-620.7.gz
+/usr/share/man/man7/url.7.gz
+/usr/share/man/man7/urn.7.gz
+/usr/share/man/man7/utf8.7.gz
+/usr/share/man/man8/ld-linux.8.gz
+/usr/share/man/man8/ld-linux.so.8.gz
+```
+
+Looks like lots of file across `/usr/share/man/` from `man1` through `man8`. 
+
+Here's what it would look like if manpages were not installed
+
+```
+root@abf0140a058c:/# dpkg -l manpages
+Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
+|/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+||/ Name           Version      Architecture Description
++++-==============-============-============-=================================
+un  manpages       <none>       <none>       (no description available)
+
+root@abf0140a058c:/# dpkg -L manpages
+dpkg-query: package 'manpages' is not installed
+Use dpkg --contents (= dpkg-deb --contents) to list archive files contents.
+```
+
+Let's see what's in those directories right now.
+
+```sh
+tree /usr/share/man
+```
+
+```
+/usr/share/man
+|-- cs
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- da
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- de
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- es
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- fr
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- hu
+|   `-- man1
+|-- id
+|   `-- man1
+|-- it
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- ja
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- ko
+|   `-- man1
+|-- man1
+|-- man3
+|-- man5
+|-- man7
+|-- man8
+|-- nl
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- pl
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- pt
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- ru
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- sv
+|   |-- man1
+|   |-- man5
+|   `-- man8
+|-- tr
+|   `-- man1
+|-- zh_CN
+|   |-- man1
+|   |-- man5
+|   `-- man8
+`-- zh_TW
+    `-- man1
+
+67 directories, 0 files
+```
+
+There are zero files in that tree.
+
+Permissions were checked. Reinstallation with `apt` was forced. Head was banged against the wall. Eventually, searching Google with "ubuntu minimal install manpages without unminimize" turned up a link to a [GitHub issue with a comment that mentioned the following](https://github.com/docker/for-linux/issues/639#issuecomment-502491698):
+
+> Some `dpkg` exclusion rules are set up to avoid installing manual pages.
+
+And there it was, right up by the top of the `unminimize` script:
+
+```sh
+if [ -f /etc/dpkg/dpkg.cfg.d/excludes ] || [ -f /etc/dpkg/dpkg.cfg.d/excludes.dpkg-tmp ]; then
+    echo "Re-enabling installation of all documentation in dpkg..."
+    if [ -f /etc/dpkg/dpkg.cfg.d/excludes ]; then
+        mv /etc/dpkg/dpkg.cfg.d/excludes /etc/dpkg/dpkg.cfg.d/excludes.dpkg-tmp
+    fi
+...
+```
+
+A quick look inside the `/etc/dpkg/dpkg.cfg.d/excludes` file showed that `/usr/share/man` was indeed excluded. You can see it on the line below "Drop all man pages."
+
+```
+cat /etc/dpkg/dpkg.cfg.d/excludes
+
+# Drop all man pages
+path-exclude=/usr/share/man/*
+
+# Drop all translations
+path-exclude=/usr/share/locale/*/LC_MESSAGES/*.mo
+
+# Drop all documentation ...
+path-exclude=/usr/share/doc/*
+
+# ... except copyright files ...
+path-include=/usr/share/doc/*/copyright
+
+# ... and Debian changelogs
+path-include=/usr/share/doc/*/changelog.Debian.*
+```
+
+The next step was to edit `/etc/dpkg/dpkg.cfg.d/excludes` and comment out the line with `cat /etc/dpkg/dpkg.cfg.d/excludes`, and then force a reinstall with `apt`.
+
+```sh
+# be sure you commented out the exclude first!
+apt --reinstall install manpages
+```
+
+Try running `man man` again
+
+```sh
+man man
+```
+
+```
+MAN(7)
+
+NAME
+       man - macros to format man pages
+...
+```
+
+That looks good. Let's double check with `tree`
+
+```sh
+tree /usr/share/man
+```
+
+Suffice to say, it looks much better now.
+
+Here's a nice script to make a script to provision manpages automatically:
+
+```sh
+cat <<EOF > provision.sh
+#!/bin/bash
+apt update
+apt --yes upgrade
+
+# remove dpkg exclusion for manpages
+apt install sed
+sed -e '\|/usr/share/man|s|^#*|#|g' -i /etc/dpkg/dpkg.cfg.d/excludes
+
+# install manpage packages and dependencies
+apt --yes install apt-utils dialog manpages manpages-posix man-db
+
+# remove dpkg-divert entries
+rm -f /usr/bin/man
+dpkg-divert --quiet --remove --rename /usr/bin/man
+rm -f /usr/share/man/man1/sh.1.gz
+dpkg-divert --quiet --remove --rename /usr/share/man/man1/sh.1.gz
+EOF
+```
+
+Let's test it out in a new container
+
+```sh
+docker run -it --rm --init --mount type=bind,source="$(pwd)",target=/foo
+```
+
+```
+bash foo/provision.sh
+man man
+```
+
+Sweet, sweet victory.
 
 Ultimately, I still don't know why `apt` install fails when deleting a file that's been diverted, in this case `/usr/bin/man`. I think that's a deeper exploration than necessary right now. I understand enough to cleanly unwind what's been minimized, and I'm happy to have man pages again.
 
@@ -308,7 +855,7 @@ Ultimately, I still don't know why `apt` install fails when deleting a file that
 It's had many names over the years on Mac: boot2docker, Moby, LinuxKit...
 
 ```
-docker run -it --rm --privileged --pid=host justincormack/nsenter1
+docker run -it --rm --init --mount type=bind,source="$(pwd)",target=/foo ubuntu bash
 ```
 
 ### connect to serial tty on mac using c-kermit
