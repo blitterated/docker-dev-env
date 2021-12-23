@@ -331,7 +331,9 @@ kermit -l ~/Library/Containers/com.docker.docker/Data/vms/0/tty -b 38400
 
 ## Create a Docker volume
 
-Or, why using Docker volumes is a bad idea for development. The volumes are stored inside the Linux kernel instance that is the  host for all the guest docker kernels, and not via a bound volume to the root OS' filesystem. Of course if your root OS is Linux, then you're fine
+Or, why using Docker volumes is a bad idea for development. The volumes are stored inside the Linux kernel instance that is the host for all the guest docker kernels, and not via a bind mount to the filesystem of the host OS. Of course if your root OS is Linux, then it will be available on the root filesystem, but it's still technically a folder managed by Docker.
+
+In other words, use a bind mount, not a volume if you want your code accessible to the host OS and the Docker container.
 
 
 ### Create a new volume
@@ -340,41 +342,73 @@ Or, why using Docker volumes is a bad idea for development. The volumes are stor
 docker volume create my-vol
 ```
 
-### Mount the volume to a container
+### Setup git and pull a repo down into the volume
+
+#### Mount the volume to a container
 
 ```sh
-docker run -it --rm --init -v my-vol:/foo dde /bin/ash
+docker run -it --rm --init -v my-vol:/foo ubuntu bash
 ```
 
-### Clone a git repo into the volume
+#### Install git
 
 ```sh
+apt update
+apt install git
 ```
 
-### Shut down the container and view the volume with nsenter1
+
+#### Clone a git repo into the volume
 
 ```sh
+cd /foo
+git clone https://github.com/justincormack/nsenter1.git
+ls nsenter1
 ```
 
-### Peek at where the volume is stored on the Docker Linux VM image
+#### Exit the container
+
+```sh
+exit
+```
+
+### View the volume with nsenter1
+
+#### Fire up the nsenter1 container
 
 ```sh
 docker run -it --rm --privileged --pid=host justincormack/nsenter1
-
-# ls /var/lib/docker/volumes/
 ```
 
-### List out the contents of the volume with a busybox container
+#### Peek at where the volume is stored on the Docker Linux VM image
+
+**NOTE:** This is not a container at this point. You've entered the Linux VM where Docker containers are run. This is the intermediary Linux VM that sits between Mac OS and Docker containers.
 
 ```sh
+ls /var/lib/docker/volumes/my-vol/_data/nsenter1/
 ```
-
-### Bind mount the volume to Mac OS using a busybox container
+#### Exit nsenter1
 
 ```sh
+exit
 ```
 
 
+### Bind mount the volume to Mac OS
+
+Yeah, you can't do this. The bind mount would overlay any existing folders on the container. It throws an error anyway.
+
+```sh
+mkdir bar
+docker run -it --rm --init \
+           --mount type=volume,source=my-vol,target=/foo \
+           --mount type=bind,source="$(pwd)"/bar,target=/foo \
+           ubuntu bash
+```
+
+```
+docker: Error response from daemon: Duplicate mount point: /foo.
+```
 
 # Issues
 
