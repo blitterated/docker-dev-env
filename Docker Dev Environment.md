@@ -163,22 +163,15 @@ EOF
 
 ```sh
 cat <<"EOF" > Dockerfile
-FROM alpine
+FROM ubuntu
 
 MAINTAINER blitterated blitterated@protonmail.com
 
 COPY bash_profile /root/.bash_profile
 COPY bashrc /root/.bashrc
+COPY provision.sh /root/provision.sh
 
-RUN apk --update add \
-        mandoc man-pages mandoc-apropos \
-        less less-doc \
-        bash bash-doc bash-completion \
-        curl curl-doc \
-        git git-doc \
-        openssh-client \
-        the_silver_searcher \
-        neovim
+RUN /root/provision.sh
 EOF
 ```
 
@@ -191,7 +184,7 @@ docker build -t dde .
 ### Run the docker-dev-env image
 
 ```sh
-docker run --rm -it dde /bin/bash
+docker run -it --rm --init dde /bin/bash
 ```
 
 ## Setup man pages in a conatiner
