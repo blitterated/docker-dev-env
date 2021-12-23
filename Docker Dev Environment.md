@@ -2,6 +2,31 @@
 
 I'm not so worried about a single process running isolated in Docker as I am having an isolated filesystem that is unpolluted with dependencies and runtimes from other projects. In return, neither can this isolated filesystem pollute the host OS'.
 
+## Intent
+* This concept is not for creating containers ready for production deployment. Instead the intent is to code without polluting the developers' machines, and to deploy the project to a production runtime that is not container based. It's simply another way to achieve a deeper kind of segregation along the lines of virtualenv or asdf.
+
+## Goals
+* Segregate project dependencies and runtimes from the host OS
+* Run project code and tests in the container
+* Keep code on host OS, use bind mounts not volumes
+* Edit code with tools on host OS
+
+### Questions
+* If nothing needs to be running in the container, then what's going to be running when the container is started?
+* Do we need a container if just a union mount filesystem will do?
+    * Yes you need a container. The filesystems are unioned in the kernel.
+
+### Strectch Goals
+* Have an init process running
+   * spin up services that may be needed such as ssh and syslog
+   * catch zombie processes
+* ssh key forwarding from host with ssh-agent
+   * Is this needed? The main usecase is git cloning, but if the files are stored on the host's filesystem then we don't need git or ssh access in the container.
+* logging issues with syslog
+   * Is this needed? The only usecase is if the code in question will be run in the container for testing. More than likely, this will be true. We will run the code in the container. The runtime *is* one of the dependencies.
+
+
+
 ## Setup the repo
 
 ```sh
@@ -105,6 +130,11 @@ git config user.email
   apt install vim
   ```
 
+## Generate an ssh key for github
+
+```sh
+ssh-keygen -t ed25519 -C "git@blitterated.com"
+```
 
 ## Create an Alpine Docker image
 
@@ -144,6 +174,7 @@ RUN apk --update add \
         bash bash-doc bash-completion \
         curl curl-doc \
         git git-doc \
+        openssh-client \
         the_silver_searcher \
         neovim
 EOF
@@ -161,9 +192,116 @@ docker build -t dde .
 docker run --rm -it dde /bin/bash
 ```
 
+## Setup man pages in a conatiner
+
+This is based on experimentation to find out how to get manpages setup on a minimized Debian, Ubuntu, or Phusion container. I'm don't want to run `unminimize` and reinstall everything that was removed, just some manpages. This will all wind up in the `Dockerfile`.
+
+Always update the package list first. Otherwise you man not be able to find any packages while searching
+
+```sh
+apt update
+```
+
+man-db needs something for displaying pages. Dialog is preferred, but it will fall back to Readline during installation.
+
+```sh
+apt install dialog
+```
+
+Next install man-db.
+
+```sh
+apt install man-db
+```
+
+### confusing issues ensued
+
+Running `man man` at this point will give you a message letting you now that the system has been minimized, and you should run unminimize. 
+
+```
+This system has been minimized by removing packages and content that are
+not required on a system that users do not log into.
+
+To restore this content, including manpages, you can run the 'unminimize'
+command. You will still need to ensure the 'man-db' package is installed.
+```
+
+So the `man` executable has not been replaced. Initially I thought it was because there was _already_ and executable in place. I tried deleting it first before installing on a new container:
+
+```sh
+apt update
+rm $(which man)
+apt install dialog
+apt install man-db
+```
+
+But now installation of man-db was failing because it couldn't find the `man` executable. Why would `apt` need the `man` executable to already be in place when installing `man`? I decided to take a look at the `unminimize` script itself and found this code near the end:
+
+```sh
+if  [ "$(dpkg-divert --truename /usr/bin/man)" = "/usr/bin/man.REAL" ]; then
+    # Remove diverted man binary
+    rm -f /usr/bin/man
+    dpkg-divert --quiet --remove --rename /usr/bin/man
+fi
+```
+
+Ah! `apt` usually uses `dpkg` behind the scenes. This offers a hint as to why `apt install man-db` needed `man` to be in place already. So [what is dpkg-divert doing](https://linux.die.net/man/8/dpkg-divert)?
+
+
+> dpkg-divert is the utility used to set up and update the list of diversions.
+
+>File diversions are a way of forcing dpkg(1) not to install a file into its location, but to a diverted location. Diversions can be used through the Debian package scripts to move a file away when it causes a conflict. System administrators can also use it to override some package's configuration file, or whenever some files (which aren't marked as 'conffiles') need to be preserved by dpkg, when installing a newer version of a package which contains those files.
+
+Let's see a list of what's being diverted then:
+
+```sh
+dpkg-divert --list
+```
+
+```
+local diversion of /sbin/initctl to /sbin/initctl.distrib
+diversion of /usr/share/man/man1/sh.1.gz to /usr/share/man/man1/sh.distrib.1.gz by dash
+local diversion of /usr/bin/man to /usr/bin/man.REAL
+diversion of /bin/sh to /bin/sh.distrib by dash
+```
+
+Now we're getting somewhere. Let's try installing `man-db` again in a fresh container.
+
+```sh
+apt update
+apt install dialog
+apt install man-db
+```
+
+Next, try running `man.REAL`
+
+```sh
+man.REAL man
+```
+
+```
+No manual entry for man
+```
+
+Yes! that's a working `man` install, albeit with no entries. Finally, let's try running the cleanup lines from the `unminimize` script, and then `man man`.
+
+```sh
+rm -f /usr/bin/man
+dpkg-divert --quiet --remove --rename /usr/bin/man
+man man
+```
+
+```
+No manual entry for man
+```
+
+Success! All that's left now is to install some manpages. Ultimately, I still don't know why `apt` install fails when deleting a file (in this case `/usr/bin/man`) that's been diverted. I think that's a deeper exploration that necessary right now. I understand enough to cleanly unwind what's been minimized, and I'm happy to have man pages again.
+
 ## Connect to Docker's secret Linux VM
 
 ### connect using nsenter1
+
+It's had many names over the years on Mac: boot2docker, Moby, LinuxKit...
 
 ```
 docker run -it --rm --privileged --pid=host justincormack/nsenter1
@@ -195,11 +333,13 @@ Or, why using Docker volumes is a bad idea for development. The volumes are stor
 ### Create a new volume
 
 ```sh
+docker volume create my-vol
 ```
 
 ### Mount the volume to a container
 
 ```sh
+docker run -it --rm --init -v my-vol:/foo dde /bin/ash
 ```
 
 ### Clone a git repo into the volume
@@ -236,7 +376,7 @@ docker run -it --rm --privileged --pid=host justincormack/nsenter1
 
 ## Error while using `apk search` with Alpine. 
 
-This was before switching to Arch
+This was before switching to Arch and then Debian based images
 
 ```
 bash-5.1# apk search ag
@@ -359,4 +499,6 @@ RUN apk --update add \
   * [Choosing an init process for multi-process containers](https://ahmet.im/blog/minimal-init-process-for-containers/)
   * [s6](https://skarnet.org/software/s6/index.html)
   * [s6-overlay](https://github.com/just-containers/s6-overlay)
-  * 
+* Installing man pages
+  * [How to install man pages on Ubuntu Linux](https://www.cyberciti.biz/faq/how-to-add-install-man-pages-on-ubuntu-linux/)
+  * [dpkg-divert(8) - Linux man page](https://linux.die.net/man/8/dpkg-divert)
