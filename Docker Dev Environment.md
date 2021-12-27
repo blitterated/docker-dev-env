@@ -138,7 +138,7 @@ git config user.email
 ssh-keygen -t ed25519 -C "git@blitterated.com"
 ```
 
-## Create an Alpine Docker image
+## Create an Ubuntu Docker image
 
 ### Create a bash_profile for Docker image
 
