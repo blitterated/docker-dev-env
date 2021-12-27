@@ -1065,18 +1065,28 @@ RUN apk --update add \
   * [SO: How to install Go in alpine linux](https://stackoverflow.com/questions/52056387/how-to-install-go-in-alpine-linux)
 * VSCode
    * [Developing inside a Container](https://code.visualstudio.com/docs/remote/containers)
+   * [Remote Development using SSH](https://code.visualstudio.com/docs/remote/ssh)
 * Linux Kit
-  * [GH linuxkit](https://github.com/linuxkit/linuxkit)
+  * [GH: linuxkit](https://github.com/linuxkit/linuxkit)
   * [Announcing LinuxKit](https://www.docker.com/blog/introducing-linuxkit-container-os-toolkit/)
   * [busybox on DockerHub](https://hub.docker.com/_/busybox)
 * `docker run` with `--init`
   * [Docker docs: Specify an init process](https://docs.docker.com/engine/reference/run/#specify-an-init-process)
-  * [SO How to use --init parameter in docker run](https://stackoverflow.com/questions/43122080/how-to-use-init-parameter-in-docker-run)
+  * [SO: How to use --init parameter in docker run](https://stackoverflow.com/questions/43122080/how-to-use-init-parameter-in-docker-run)
   * [baseimage-docker (A good explanation of why you'd want to)](https://phusion.github.io/baseimage-docker/)
   * [tini](https://github.com/krallin/tini)
   * [Choosing an init process for multi-process containers](https://ahmet.im/blog/minimal-init-process-for-containers/)
   * [s6](https://skarnet.org/software/s6/index.html)
   * [s6-overlay](https://github.com/just-containers/s6-overlay)
+  * [Docker and the PID 1 zombie reaping problem](https://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/)
+  * [Container cannot connect to Upstart #1024](https://github.com/moby/moby/issues/1024#)
 * Installing man pages
   * [How to install man pages on Ubuntu Linux](https://www.cyberciti.biz/faq/how-to-add-install-man-pages-on-ubuntu-linux/)
   * [dpkg-divert(8) - Linux man page](https://linux.die.net/man/8/dpkg-divert)
+* SSH forwarding
+  * [GH: Generating a new SSH key and adding it to the ssh-agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+  * [SO: Using SSH keys inside docker container](https://stackoverflow.com/questions/18136389/using-ssh-keys-inside-docker-container/66301568#66301568)
+  * [Build secrets and SSH forwarding in Docker 18.09](https://medium.com/@tonistiigi/build-secrets-and-ssh-forwarding-in-docker-18-09-ae8161d066)
+  * [GH: How to SSH agent forward into a docker container](https://gist.github.com/d11wtq/8699521)
+  * [Sharing an SSH Agent between a host machine and a Docker container](https://www.jamesridgway.co.uk/sharing-an-ssh-agent-between-a-host-machine-and-a-docker-container/)
+  * 
