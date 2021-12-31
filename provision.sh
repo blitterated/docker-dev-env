@@ -2,7 +2,7 @@
 apt update
 apt --yes upgrade
 
-# remove dpkg exclusion for manpages
+# comment out dpkg exclusion for manpages
 apt --yes install sed
 sed -e '\|/usr/share/man|s|^#*|#|g' -i /etc/dpkg/dpkg.cfg.d/excludes
 
