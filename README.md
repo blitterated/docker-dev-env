@@ -134,11 +134,44 @@ git config user.email
   apt install vim
   ```
 
-## Generate an ssh key for github
+## Access github via ssh
+
+### Generate an ssh key for github
 
 ```sh
 ssh-keygen -t ed25519 -C "git@blitterated.com"
 ```
+
+### Add an entry to ~/.ssh/config
+
+```
+Host ghblit
+  ForwardAgent yes
+  Hostname github.com
+  User git
+  IdentityFile /Users/peteyoung/.ssh/id_ed25519
+```
+
+### Test connection
+
+Be sure you've added the public key to github first
+
+```
+ssh -T git@ghblit
+```
+
+### Add the remote
+
+```
+git remote add origin git@ghblit:blitterated/docker_dev_env.git
+```
+
+### Push commits for first time
+
+```
+git push -u origin master
+```
+
 
 ## Create an Ubuntu Docker image
 
