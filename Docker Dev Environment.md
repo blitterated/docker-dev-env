@@ -3,7 +3,7 @@
 I'm not so worried about a single process running isolated in Docker as I am having an isolated filesystem that is unpolluted with dependencies and runtimes from other projects. In return, neither can this isolated filesystem pollute the filesystem of the host OS.
 
 ## Intent
-* This concept is not for creating containers ready for production deployment. Instead the intent is to code without polluting the developers' machines, and to deploy the project to a production runtime that is not container based. It's simply another way to achieve a deeper kind of segregation along the lines of `virtualenv` or `bundle install--local`.
+* This concept is not for creating containers ready for production deployment. Instead the intent is to code without polluting the developer's machine, and to deploy the project to a production runtime that is not container based. It's simply another way to achieve a deeper kind of segregation along the lines of `virtualenv` or `bundle install--local`.
 
 ## Goals
 * Segregate project dependencies and runtimes from the host OS
@@ -13,14 +13,16 @@ I'm not so worried about a single process running isolated in Docker as I am hav
 
 ### Questions
 * If nothing needs to be running in the container, then what's going to be running when the container is started?
-    * There is a simple zombie eating process you get when you start Docker with `--init`
+    * There is a simple zombie eating PID1 process you get when you start Docker with `--init`. It can only handle a single child process. It was `tini`, but maybe that's changed?
     * There are other init processes available like s6, tini, runit, supervisord, monit, and others
 * Do we need a container if just a union mount filesystem will do?
     * Yes you need a container. The filesystems are unioned in the kernel.
+* Most container + init strategies have the whole container fail if one of the services' processes fails. This is so Kubernetes and the like can clean up and restart a container. Is that what I want here?
+    * Probably not. It might come in handy to explore a half dead container that was running the project code during development. OTOH, maybe all this should just be logged to a bind mount. 
 
 ### Stretch Goals
 * Have an init process running
-   * spin up services that may be needed such as ssh and syslog
+   * spin up services that may be needed such as cron, sshd, and syslog
    * catch zombie processes
 * ssh key forwarding from host with ssh-agent
    * Is this needed? The main usecase is git cloning, but if the files are stored on the host's filesystem then we don't need git or ssh access in the container.
@@ -954,8 +956,7 @@ docker: Error response from daemon: Duplicate mount point: /foo.
 
 ## Error while using `apk search` with Alpine. 
 
-This was before switching to Arch and then Debian based images
-
+This was before switching to Arch and then Debian based images.
 ```
 bash-5.1# apk search ag
 WARNING: Ignoring https://dl-cdn.alpinelinux.org/alpine/v3.14/main: No such file or directory
@@ -1089,4 +1090,3 @@ RUN apk --update add \
   * [Build secrets and SSH forwarding in Docker 18.09](https://medium.com/@tonistiigi/build-secrets-and-ssh-forwarding-in-docker-18-09-ae8161d066)
   * [GH: How to SSH agent forward into a docker container](https://gist.github.com/d11wtq/8699521)
   * [Sharing an SSH Agent between a host machine and a Docker container](https://www.jamesridgway.co.uk/sharing-an-ssh-agent-between-a-host-machine-and-a-docker-container/)
-  * 
