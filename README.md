@@ -1,9 +1,8 @@
 # Docker Dev Environment
 
-I'm not so worried about a single process running isolated in Docker as I am having an isolated filesystem that is unpolluted with dependencies and runtimes from other projects. In return, neither can this isolated filesystem pollute the filesystem of the host OS.
-
 ## Intent
-* This concept is not for creating containers ready for production deployment. Instead the intent is to code without polluting the developer's machine, and to deploy the project to a production runtime that is not container based. It's simply another way to achieve a deeper kind of segregation along the lines of `virtualenv` or `bundle install--local`.
+
+This concept is not for creating containers ready for production deployment. Instead the intent is to code without polluting the development machine, and to deploy the project to a production runtime that is most likely not container based. It's simply another way to achieve a deeper kind of segregation along the lines of `virtualenv` or `bundle install --local`.
 
 ## Goals
 * Segregate project dependencies and runtimes from the host OS
@@ -27,7 +26,7 @@ I'm not so worried about a single process running isolated in Docker as I am hav
 * ssh key forwarding from host with ssh-agent
    * Is this needed? The main usecase is git cloning, but if the files are stored on the host's filesystem then we don't need git or ssh access in the container.
 * logging issues with syslog
-   * Is this needed? The only usecase is if the code in question will be run in the container for testing. More than likely, this will be true. We will run the code in the container. The language runtime (`ruby`, `python`, et. al.) *is* one of the dependencies.
+   * Is this needed? The only usecase is if the code in question will be run in the container for testing. More than likely, this will be true. We will run the code in the container. The language runtime (`ruby`, `python`, et. al.) *is* one of the dependencies I'm trying to segregate.
 
 
 
