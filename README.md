@@ -28,4 +28,18 @@ This concept is not for creating containers ready for production deployment. Ins
 * logging issues with syslog
    * Is this needed? The only usecase is if the code in question will be run in the container for testing. More than likely, this will be true. We will run the code in the container. The language runtime (`ruby`, `python`, et. al.) *is* one of the dependencies I'm trying to segregate.
 
-### There's more info in the [wiki](https://github.com/blitterated/docker_dev_env/wiki)
+## Building and Running
+
+### Build the docker-dev-env image from Dockerfile
+
+```sh
+docker build -t dde .
+```
+
+### Run the docker-dev-env image
+
+```sh
+docker run -it --rm --init dde /bin/bash
+```
+
+##  There's more info in the [wiki](https://github.com/blitterated/docker_dev_env/wiki)

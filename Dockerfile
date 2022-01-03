@@ -2,8 +2,10 @@ FROM ubuntu
 
 MAINTAINER blitterated blitterated@protonmail.com
 
-COPY bash_profile /root/.bash_profile
-COPY bashrc /root/.bashrc
-COPY provision.sh /root/provision.sh
+WORKDIR /root
+COPY bash_profile .bash_profile
+COPY bashrc .bashrc
+COPY provision.sh provision.sh
+COPY provision/*.* provision/
 
-RUN /root/provision.sh
+RUN ./provision.sh
