@@ -12,7 +12,7 @@ This concept is not for creating containers ready for production deployment. Ins
 
 ### Questions
 * If nothing needs to be running in the container, then what's going to be running when the container is started?
-    * There is a simple zombie eating PID1 process you get when you start Docker with `--init`. It can only handle a single child process. It was `tini`, but maybe that's changed?
+    * There is a simple zombie eating PID1 process you get when you start Docker with `--init`. It can only handle a single child process. It's currently [backed by `tini`](https://docs.docker.com/engine/reference/run/#specify-an-init-process)
     * There are other init processes available like s6, tini, runit, supervisord, monit, and others
 * Do we need a container if just a union mount filesystem will do?
     * Yes you need a container. The filesystems are unioned in the kernel.
