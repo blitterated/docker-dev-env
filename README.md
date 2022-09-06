@@ -1,8 +1,7 @@
 # Docker Dev Environment
 
-|       |       |
+| [Project Goals](https://github.com/blitterated/docker_dev_env/wiki/Project-Goals) | [Project Questions](https://github.com/blitterated/docker_dev_env/wiki/Project-Questions) |
 | ----- | ----- |
-| [Project Goals](wiki/Project-Goals) | [Project Questions](wiki/Project-Questions) |
 
 ## Intent
 
