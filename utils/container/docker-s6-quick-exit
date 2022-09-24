@@ -1,0 +1,3 @@
+#!/command/execlineb
+foreground { s6-svscanctl -qb /run/service }
+exit

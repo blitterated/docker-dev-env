@@ -1,0 +1,4 @@
+#!/command/with-contenv execlineb
+importas PATH PATH
+pipeline { echo $PATH }
+tr : "\\n"
