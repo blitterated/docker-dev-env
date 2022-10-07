@@ -1,0 +1,7 @@
+# Images built from this DDE base image can add shell configuration 
+# to script files in .dde.rc. The following code will source them from
+# the same directory in sorted order.
+# You can still add code directly to .bashrc if you prefer.
+export HOME=/root
+source ~/.source_files.sh
+source_files ~/.dde.rc > ~/.source_files.log
