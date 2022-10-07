@@ -5,7 +5,9 @@
 
 ## Intent
 
-This concept is not for creating containers ready for production deployment. Instead the intent is to code without polluting the development machine, and to deploy the project to a production runtime that is most likely not container based. It's simply another way to achieve a deeper kind of segregation along the lines of `virtualenv` or `bundle install --local`.
+This concept is not for creating containers ready for production deployment. Instead the intent is to code without polluting the host development machine, and to deploy the project to a production runtime that is most likely not container based, e.g. a static website whose tooling has live/hot reload built in. It's simply another way to achieve a deeper kind of segregation along the lines of `virtualenv` or `bundle install --local`.
+
+This is meant to be a base image for building more focused build time and dev time images. I really don't like using `echo` or `sed` to add lines to `.bashrc`, so I've opted to have `.bashrc` source all files found in the `~/.dde.rc` directory in the image. Just drop any extra shell configuration in a file in that directory, and it will get sourced.
 
 ## Building and Running
 
