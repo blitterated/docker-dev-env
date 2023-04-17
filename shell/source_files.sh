@@ -1,7 +1,10 @@
+# Quick and dirty logging function for source_files below
 function log_ts {
   echo "$(date +'%Y-%m-%d %T'): $1"
 }
 
+# The source_files function will source shell configuration script files
+# found in a given directory in sorted order.
 function source_files {
 
   # Bail out if no directory argument given
