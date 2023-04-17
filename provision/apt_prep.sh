@@ -1,3 +1,5 @@
+set -e
+
 # prep indexes for apt
 apt update
 

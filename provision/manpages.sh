@@ -1,3 +1,5 @@
+set -e
+
 # Reverse the removal of manpages done during the Ubuntu
 # minimizing process
 

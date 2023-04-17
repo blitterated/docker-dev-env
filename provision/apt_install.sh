@@ -1,3 +1,5 @@
+set -e
+
 apt --yes install gzip tar xz-utils unzip \
           curl bash-completion ed vim tmux \
           psmisc tree htop \
