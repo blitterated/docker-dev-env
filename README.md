@@ -42,28 +42,5 @@ docker build -t dde .
 ```sh
 docker run -it --rm dde /bin/bash
 ```
-## Utility Scripts
-
-### Container
-
-These are available in `/usr/bin` in the container. `/usr/bin` is in the container's `PATH` by default, so you can use these from the container's shell. These will also be available to any upstream images.
-
-#### bounce
-
-This execline script bounces any services you've installed with the `s6-rc` method.
-
-#### path
-
-This execline script prints out the system paths found in the `$PATH` environment variable on separate lines.
-
-#### docker-s6-quick-exit / qb
-
-This execline script will shut down the s6 supervisor tree from the top down IMMEDIATELY, and then `exit`.
-
-You must `exec` this script for it to work properly. There is a Bash function called `qb` (quick bail) in `.bashrc` that does this.
-
-Only use this if you don't care about jacking up a container. Typical usage is when iterating quickly on partially completed images to reduce the shutdown from the default 6 seconds to near 0.
-
-
 
 ##  There's more info in the [wiki](https://github.com/blitterated/docker_dev_env/wiki)
