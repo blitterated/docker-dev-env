@@ -2,6 +2,8 @@
 
 ## Intent
 
+__NOTE:__ The [s6\_overlay version](https://github.com/blitterated/docker-dev-env-s6) has been moved to another repo that builds in the image here.
+
 This concept is not for creating containers ready for production deployment. Instead the intent is to code without polluting the host development machine, and to deploy the project to a production runtime that is most likely not container based, e.g. a static website whose tooling has live/hot reload built in. It's simply another way to achieve a deeper kind of segregation along the lines of `virtualenv` or `bundle install --local`.
 
 ## Contents
