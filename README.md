@@ -36,7 +36,7 @@ This is meant to be a base image for building more focused build time and dev ti
 ### Build the docker-dev-env image from Dockerfile
 
 ```sh
-docker build -t dde .
+docker build --progress=plain -t dde .
 ```
 
 ### Run the docker-dev-env image
